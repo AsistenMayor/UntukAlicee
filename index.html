@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Untuk Seseorang — Custom Template</title>
+<link rel="icon" href="data:;base64,iVBORw0KGgo=">
+<style>
+  :root{
+    --bg1:#fde2f3; --bg2:#c8f4f9; --accent:#ff2d75;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; font-family:Inter,ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    min-height:100vh; display:flex; gap:20px; align-items:stretch; background:linear-gradient(135deg,var(--bg1),var(--bg2));
+    color:#222;
+  }
+
+  /* layout */
+  .panel{
+    width:360px; max-width:40vw; min-width:300px; padding:18px; background:rgba(255,255,255,0.85); margin:24px; border-radius:14px; box-shadow:0 6px 30px rgba(10,10,20,0.08);
+    align-self:flex-start;
+  }
+  .preview{
+    flex:1; margin:24px; border-radius:14px; position:relative; overflow:hidden; display:flex; align-items:center; justify-content:center;
+    min-height:520px; background:linear-gradient(180deg, rgba(255,255,255,0.06), rgba(0,0,0,0.03));
+  }
+
+  h2{margin:0 0 12px 0; font-size:18px; color:var(--accent)}
+  label{display:block; font-size:13px; margin:10px 0 6px}
+  input[type="text"], textarea, select{
+    width:100%; padding:10px 12px; border-radius:10px; border:1px solid #eee; font-size:14px;
+    background:transparent; resize:vertical;
+  }
+  textarea{min-height:120px}
+
+  .row{display:flex; gap:8px}
+  button{display:inline-block;padding:10px 14px;border-radius:10px;border:0;background:linear-gradient(90deg,var(--accent),#ff77a9); color:white; cursor:pointer; font-weight:600}
+  .muted{background:transparent;color:#666;border:1px dashed #ddd;padding:8px;border-radius:8px}
+
+  /* preview content */
+  .card{
+    width:86%; max-width:920px; padding:36px; border-radius:18px; text-align:center; background:linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.35));
+    box-shadow:0 10px 30px rgba(50,10,50,0.06); position:relative; overflow:visible;
+  }
+  .to{color:var(--accent); font-weight:700; font-size:28px; margin-bottom:8px}
+  .title{font-size:22px; margin:6px 0 16px; color:#333}
+  .message{font-size:16px; color:#333; line-height:1.6; max-width:760px; margin:0 auto 18px;}
+  .action-btn{margin-top:14px;padding:12px 22px;border-radius:40px;font-weight:700; border:0; cursor:pointer; box-shadow:0 6px 20px rgba(255,80,140,0.2)}
+  .credits{position:absolute; right:12px; bottom:8px; font-size:12px; color:#999}
+
+  /* flying stickers/hearts */
+  .flying{
+    pointer-events:none; position:absolute; inset:0; overflow:hidden;
+  }
+  .sticker{
+    position:absolute; font-size:26px; animation:rise 6s linear infinite; transform-origin:center;
+  }
+  @keyframes rise {
+    0%{transform:translateY(0) scale(0.9) rotate(0); opacity:1}
+    100%{transform:translateY(-850px) scale(1.3) rotate(360deg); opacity:0}
+  }
+
+  /* small */
+  .hint{font-size:12px;color:#666;margin-top:8px}
+  .flex-between{display:flex;justify-content:space-between;align-items:center}
+  .center{display:flex;gap:8px;align-items:center}
+  .toggle{display:inline-flex;align-items:center;gap:8px}
+  .small{font-size:13px;padding:6px 10px}
+  @media(max-width:980px){ .panel{display:none} .preview{margin:12px} }
+</style>
+</head>
+<body>
+
+  <!-- LEFT PANEL: customization -->
+  <div class="panel" role="region" aria-label="Pengaturan pesan">
+    <h2>Template — custom cepat</h2>
+
+    <label for="recipient">Untuk (nama penerima)</label>
+    <input id="recipient" type="text" value="Alice" placeholder="Nama penerima...">
+
+    <label for="title">Judul singkat</label>
+    <input id="title" type="text" value="Maafkan Aku" placeholder="Judul seperti: 'Maaf' atau 'Untuk Alice'">
+
+    <label for="message">Pesan (bisa multi baris)</label>
+    <textarea id="message">Alice… aku tahu aku salah. Beri aku kesempatan lagi untuk membuktikan aku berubah. Aku janji akan jaga hatimu lebih baik lagi.</textarea>
+
+    <label for="btnText">Teks tombol aksi</label>
+    <input id="btnText" type="text" value="Maafkan Aku ❤️">
+
+    <div style="margin-top:12px" class="flex-between">
+      <div>
+        <label class="toggle"><input id="musicToggle" type="checkbox" checked> Mainkan musik</label>
+        <label class="toggle" style="margin-left:10px"><input id="stickToggle" type="checkbox" checked> Stiker hidup</label>
+      </div>
+      <div class="center">
+        <button id="apply" class="small">Terapkan</button>
+      </div>
+    </div>
+
+    <hr style="margin:14px 0;border:none;border-top:1px solid #f0f0f0">
+
+    <div class="row" style="margin-top:6px">
+      <button id="genLink" class="small">Generate Link</button>
+      <button id="downloadHtml" class="muted small">Download HTML</button>
+    </div>
+    <div class="hint" id="linkHint" style="word-break:break-all;margin-top:10px;color:#444"></div>
+
+    <hr style="margin:14px 0;border:none;border-top:1px solid #f0f0f0">
+    <div style="font-size:13px;color:#666">
+      Cara cepat: klik <b>Generate Link</b> lalu copy link — kirim ke Alice.  
+      Atau klik <b>Download HTML</b> untuk file siap upload ke GitHub Pages.
+    </div>
+  </div>
+
+  <!-- RIGHT: preview -->
+  <div class="preview" role="main">
+    <div class="card" id="card">
+      <div class="to" id="previewTo">Untuk Alice</div>
+      <div class="title" id="previewTitle">Maafkan Aku</div>
+      <div class="message" id="previewMessage">
+        Alice… aku tahu aku salah. Beri aku kesempatan lagi untuk membuktikan aku berubah. Aku janji akan jaga hatimu lebih baik lagi.
+      </div>
+      <button class="action-btn" id="previewBtn" style="background:linear-gradient(90deg,var(--accent),#ff77a9);color:white">Maafkan Aku ❤️</button>
+      <div class="credits">Dibuat dengan ❤️</div>
+
+      <!-- flying layer (hearts, stickers) -->
+      <div class="flying" id="flyingLayer" aria-hidden="true"></div>
+    </div>
+
+    <!-- audio hidden -->
+    <audio id="bgAudio" loop>
+      <source src="https://cdn.pixabay.com/download/audio/2022/03/22/audio_3d2d49f34a.mp3?filename=sad-romantic-piano-ambient-10911.mp3" type="audio/mpeg">
+    </audio>
+  </div>
+
+<script>
+  // --- helpers
+  const $ = id => document.getElementById(id);
+  const qs = (k,def) => (new URLSearchParams(location.search).get(k)) || def;
+
+  // fill initial from URL if present
+  $('recipient').value = qs('to','Alice');
+  $('title').value = qs('title','Maafkan Aku');
+  $('message').value = qs('msg','Alice… aku tahu aku salah. Beri aku kesempatan lagi untuk membuktikan aku berubah. Aku janji akan jaga hatimu lebih baik lagi.');
+  $('btnText').value = qs('btn','Maafkan Aku ❤️');
+  $('musicToggle').checked = (qs('music','1') === '1');
+  $('stickToggle').checked = (qs('stick','1') === '1');
+
+  // preview elements
+  const previewTo = $('previewTo');
+  const previewTitle = $('previewTitle');
+  const previewMessage = $('previewMessage');
+  const previewBtn = $('previewBtn');
+  const flying = $('flyingLayer');
+  const bgAudio = $('bgAudio');
+
+  function applyPreview(){
+    previewTo.textContent = 'Untuk ' + ($('recipient').value || 'Seseorang');
+    previewTitle.textContent = $('title').value || '';
+    previewMessage.textContent = $('message').value || '';
+    previewBtn.textContent = $('btnText').value || 'OK';
+
+    if($('musicToggle').checked){
+      // try to play (may be blocked on some browsers without user gesture)
+      bgAudio.play().catch(()=>{ /* ignore autoplay block */});
+      bgAudio.volume = 0.5;
+      bgAudio.style.display = '';
+    } else {
+      bgAudio.pause();
+    }
+
+    // stickers toggle
+    if($('stickToggle').checked){
+      startStickers();
+    } else {
+      stopStickers();
+    }
+  }
+
+  $('apply').addEventListener('click', applyPreview);
+
+  // generate link: encode fields into URL
+  $('genLink').addEventListener('click', () => {
+    const params = new URLSearchParams({
+      to: $('recipient').value || '',
+      title: $('title').value || '',
+      msg: $('message').value || '',
+      btn: $('btnText').value || '',
+      music: $('musicToggle').checked ? '1' : '0',
+      stick: $('stickToggle').checked ? '1' : '0'
+    });
+    const shareUrl = location.origin + location.pathname + '?' + params.toString();
+    navigator.clipboard?.writeText(shareUrl).then(()=> {
+      $('linkHint').textContent = 'Link disalin! Kamu juga bisa copy manual: ' + shareUrl;
+    }).catch(()=> {
+      $('linkHint').textContent = shareUrl;
+    });
+  });
+
+  // download HTML: create a standalone file (inject current values)
+  $('downloadHtml').addEventListener('click', () => {
+    const state = {
+      to: $('recipient').value,
+      title: $('title').value,
+      msg: $('message').value,
+      btn: $('btnText').value,
+      music: $('musicToggle').checked ? '1' : '0',
+      stick: $('stickToggle').checked ? '1' : '0'
+    };
+
+    // a minimal self-contained HTML using same visual + basic stickers (external images optional)
+    const fileContent = generateStandaloneHTML(state);
+    const blob = new Blob([fileContent], {type: 'text/html'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `untuk-${(state.to||'seseorang').replace(/\s+/g,'-')}.html`;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url), 3000);
+  });
+
+  // preview button action - show small animation + message
+  previewBtn.addEventListener('click', () => {
+    popHearts(28);
+    setTimeout(()=> alert("Pesan terkirim — semoga dia mau memberi kesempatan ❤️"), 300);
+  });
+
+  // stickers logic
+  let stickerInterval = null;
+  const stickerImages = [
+    "https://media.tenor.com/I6T6jA3PdxMAAAAi/pink-heart.gif",
+    "https://media.tenor.com/ggK_EVE3kXMAAAAi/butterfly-flying.gif",
+    "https://media.tenor.com/pvDjKUDGcFIAAAAi/heart-beat.gif"
+  ];
+
+  function randomLeft(){ return Math.random()*92 + '%'; }
+  function popStickerOnce(){
+    const img = document.createElement('img');
+    img.src = stickerImages[Math.floor(Math.random()*stickerImages.length)];
+    img.className = 'sticker';
+    img.style.left = randomLeft();
+    img.style.bottom = '-30px';
+    img.style.width = (30 + Math.random()*70) + 'px';
+    img.style.opacity = 0.95;
+    img.style.animationDuration = (4 + Math.random()*4) + 's';
+    flying.appendChild(img);
+    setTimeout(()=> img.remove(), 7000);
+  }
+  function startStickers(){
+    if(stickerInterval) return;
+    popStickerOnce();
+    stickerInterval = setInterval(popStickerOnce, 900);
+  }
+  function stopStickers(){
+    if(stickerInterval){ clearInterval(stickerInterval); stickerInterval = null; }
+    // remove existing
+    [...flying.querySelectorAll('.sticker')].forEach(n=>n.remove());
+  }
+
+  // hearts pop
+  function popHearts(n=12){
+    for(let i=0;i<n;i++){
+      const el = document.createElement('div');
+      el.textContent = ['💖','💗','💕','💘'][Math.floor(Math.random()*4)];
+      el.className = 'sticker';
+      el.style.left = (10 + Math.random()*80) + '%';
+      el.style.bottom = '0';
+      el.style.fontSize = (14 + Math.random()*40) + 'px';
+      el.style.animationDuration = (3 + Math.random()*4) + 's';
+      flying.appendChild(el);
+      setTimeout(()=> el.remove(), 6500);
+    }
+  }
+
+  // initialize
+  applyPreview();
+
+  // auto-start stickers if enabled
+  if($('stickToggle').checked) startStickers();
+
+  // generate standalone HTML content function
+  function escapeHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  function generateStandaloneHTML(state){
+    // very small and safe HTML - uses same external audio + sticker gifs
+    const musicPart = (state.music === '1') ? `
+      <audio id="bgAudio" loop autoplay>
+        <source src="https://cdn.pixabay.com/download/audio/2022/03/22/audio_3d2d49f34a.mp3?filename=sad-romantic-piano-ambient-10911.mp3" type="audio/mpeg">
+      </audio>` : '';
+
+    return `<!doctype html>
+<html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Untuk ${escapeHtml(state.to)}</title>
+<style>
+  body{margin:0; font-family:Inter,system-ui; background:linear-gradient(135deg,#fde2f3,#c8f4f9);display:flex;align-items:center;justify-content:center;height:100vh}
+  .card{width:88%;max-width:880px;padding:36px;border-radius:18px;background:linear-gradient(180deg, rgba(255,255,255,0.7), rgba(255,255,255,0.45));text-align:center;box-shadow:0 12px 40px rgba(0,0,0,0.06)}
+  h1{color:#ff2d75;margin:6px 0 10px}
+  p{color:#333;line-height:1.6}
+  button{padding:12px 22px;border-radius:40px;border:0;background:linear-gradient(90deg,#ff2d75,#ff77a9);color:#fff;font-weight:700}
+  .flying{position:absolute;inset:0;pointer-events:none}
+  .sticker{position:absolute;animation:rise 6s linear forwards}
+  @keyframes rise{0%{transform:translateY(0);opacity:1}100%{transform:translateY(-820px) scale(1.2);opacity:0}}
+</style>
+</head><body>
+<div class="card">
+  <div style="font-weight:700;color:#ff2d75;font-size:26px">Untuk ${escapeHtml(state.to)}</div>
+  <h1>${escapeHtml(state.title)}</h1>
+  <p>${escapeHtml(state.msg).replace(/\\n/g,'<br>')}</p>
+  <button onclick="popHearts()"> ${escapeHtml(state.btn)} </button>
+</div>
+<div class="flying" id="flying"></div>
+${musicPart}
+<script>
+  const stickers = [
+    "https://media.tenor.com/I6T6jA3PdxMAAAAi/pink-heart.gif",
+    "https://media.tenor.com/ggK_EVE3kXMAAAAi/butterfly-flying.gif",
+    "https://media.tenor.com/pvDjKUDGcFIAAAAi/heart-beat.gif"
+  ];
+  function popHearts(n=14){
+    const f = document.getElementById('flying');
+    for(let i=0;i<n;i++){
+      const el = document.createElement('img');
+      el.src = stickers[Math.floor(Math.random()*stickers.length)];
+      el.className='sticker';
+      el.style.left = (10 + Math.random()*80) + '%';
+      el.style.bottom = '-20px';
+      el.style.width = (30 + Math.random()*60) + 'px';
+      el.style.animationDuration = (3 + Math.random()*4) + 's';
+      f.appendChild(el);
+      setTimeout(()=>el.remove(),7000);
+    }
+  }
+  // auto release every 900ms (only if stickers allowed)
+  ${state.stick === '1' ? "setInterval(popHearts,900);" : ""}
+</script>
+</body></html>`;
+  }
+
+  // accessibility: update preview on input change faster
+  ['recipient','title','message','btnText','musicToggle','stickToggle'].forEach(id=>{
+    $(id).addEventListener('input', ()=>{ /* no-op */ });
+  });
+
+</script>
+</body>
+</html>
